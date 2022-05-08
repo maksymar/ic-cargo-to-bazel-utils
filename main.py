@@ -180,7 +180,7 @@ def to_graphviz(graph):
 def main():
     SOURCE_DIR = '../ic/rs/'
     ROOT_PACKAGE = 'ic-types'
-    GRAPH_FILE = './output/graph.gv'
+    GRAPH_FILES = './output/graph.gv'
 
     graph = build_graph(SOURCE_DIR)
     subtree = extract_subtree(graph, ROOT_PACKAGE)
@@ -194,7 +194,7 @@ def main():
     add_height_color(subtree, RED, YELLOW)
 
     dot = to_graphviz(subtree)
-    dot.render(GRAPH_FILE, view=True)
+    dot.render(GRAPH_FILES, view=True)
 
 
 if __name__ == '__main__':
