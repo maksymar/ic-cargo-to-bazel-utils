@@ -180,7 +180,7 @@ def to_graphviz(graph):
 def main():
     SOURCE_DIR = '../ic/rs/'
     ROOT_PACKAGE = 'ic-types'
-    GRAPH_FILE = './graph.gv'
+    GRAPH_FILE = './output/graph.gv'
 
     graph = build_graph(SOURCE_DIR)
     subtree = extract_subtree(graph, ROOT_PACKAGE)
