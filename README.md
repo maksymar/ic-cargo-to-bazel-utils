@@ -13,4 +13,4 @@ Help with `Cargo`-to-`Bazel` migration for the [Internet Computer](https://githu
   - parent count
   - CSV table with node height & parent count
 
-![Example](./images/ic-types.svg)
+![Example](./images/ic-types.png)
