@@ -10,3 +10,5 @@ Help with `Cargo`-to-`Bazel` migration for the [Internet Computer](https://githu
   - node height colors
     - `green` converted to Bazel
     - from `red` (leafs) to `yellow` (dependants) to be converted
+  - parent count
+  - CSV table with node height & parent count
