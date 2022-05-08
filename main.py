@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 import os
+import csv
 import copy
 import toml
 import graphviz
@@ -177,10 +178,23 @@ def to_graphviz(graph):
     return dot
 
 
+def calculate_table_data(graph):
+    data = []
+    for package_name in graph:
+        info = graph[package_name]
+        data.append({
+            'name': package_name,
+            'bazel': 'yes' if info.get('bazel_path') else 'no',
+            'height': info.get('height'),
+        })
+    return data
+
+
 def main():
     SOURCE_DIR = '../ic/rs/'
     ROOT_PACKAGE = 'ic-types'
     GRAPH_FILES = './output/graph.gv'
+    CSV_FILE = './output/packages.csv'
 
     graph = build_graph(SOURCE_DIR)
     subtree = extract_subtree(graph, ROOT_PACKAGE)
@@ -192,6 +206,13 @@ def main():
     RED = (255, 0, 0)
     YELLOW = (255, 255, 0)
     add_height_color(subtree, RED, YELLOW)
+
+    data = calculate_table_data(subtree)
+    with open(CSV_FILE, 'w+') as f:
+        columns = data[0].keys()
+        writer = csv.DictWriter(f, columns)
+        writer.writeheader()
+        writer.writerows(data)
 
     dot = to_graphviz(subtree)
     dot.render(GRAPH_FILES, view=True)
