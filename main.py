@@ -2,7 +2,6 @@
 import os
 import copy
 import toml
-import graphviz
 from pathlib import Path
 
 
@@ -74,7 +73,7 @@ def remove_unwanted_nodes(graph):
     return subtree
 
 
-def filter_subtree(graph, target_package):
+def extract_subtree(graph, target_package):
     # Get roots.
     roots = set(graph.keys())
     for package_name in graph:
@@ -109,7 +108,7 @@ def main():
     ROOT_PACKAGE = None  # 'ic-types'
 
     graph = build_graph(SOURCE_DIR)
-    subtree = filter_subtree(graph, ROOT_PACKAGE)
+    subtree = extract_subtree(graph, ROOT_PACKAGE)
     bazel_n, total, ratio = calculate_progress(subtree)
     print(
         f'Packages converted to Bazel: {bazel_n} / {total} ({100*ratio:>5.01f}%)')
