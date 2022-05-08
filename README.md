@@ -12,3 +12,5 @@ Help with `Cargo`-to-`Bazel` migration for the [Internet Computer](https://githu
     - from `red` (leafs) to `yellow` (dependants) to be converted
   - parent count
   - CSV table with node height & parent count
+
+![Example](./images/ic-types.svg)
