@@ -81,11 +81,13 @@ def extract_subtree(graph, target_package):
             roots.discard(child)
 
     # Link all the roots to a fake root.
-    FAKE_ROOT = 'fake-root'
+    FAKE_ROOT = 'none'
     graph[FAKE_ROOT] = {'children': roots}
     print(f'Root nodes linked to "{FAKE_ROOT}": {len(roots)}')
 
     if target_package is None or len(str(target_package).strip()) == 0:
+        # Add extra fake root for 'target_package' entry point.
+        graph[target_package] = graph[FAKE_ROOT]
         return graph
 
     # Extract target package subtree.
@@ -222,7 +224,9 @@ def write_csv(graph, path):
 
 def main():
     SOURCE_DIR = '../ic/rs/'
-    ROOT_PACKAGE = 'ic-types'
+    ROOT_PACKAGE = 'none'  # 'none' for all the packages
+    #ROOT_PACKAGE = 'ic-types'
+    #ROOT_PACKAGE = 'ic-execution-environment'
     GRAPH_FILES = './output/graph.gv'
     CSV_FILE = './output/packages.csv'
 
