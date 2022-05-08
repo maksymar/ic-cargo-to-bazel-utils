@@ -13,4 +13,13 @@ Help with `Cargo`-to-`Bazel` migration for the [Internet Computer](https://githu
   - parent count
   - CSV table with node height & parent count
 
+## Examples
+
+### ic-ic00-types
+![Example](./images/ic-ic00-types.png)
+
+### ic-types
 ![Example](./images/ic-types.png)
+
+### ic-execution-environment
+![Example](./images/ic-execution-environment.png)

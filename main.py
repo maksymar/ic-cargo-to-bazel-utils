@@ -224,7 +224,8 @@ def write_csv(graph, path):
 
 def main():
     SOURCE_DIR = '../ic/rs/'
-    ROOT_PACKAGE = 'none'  # 'none' for all the packages
+    # ROOT_PACKAGE = 'none'  # 'none' for all the packages
+    ROOT_PACKAGE = 'ic-ic00-types'
     #ROOT_PACKAGE = 'ic-types'
     #ROOT_PACKAGE = 'ic-execution-environment'
     GRAPH_FILES = './output/graph.gv'
