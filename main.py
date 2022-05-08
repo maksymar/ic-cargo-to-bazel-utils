@@ -115,6 +115,19 @@ def add_height(graph, current):
     return info['height']
 
 
+def add_parent_count(graph):
+    # Count number of parents for each child.
+    counter = {}
+    for parent in graph:
+        for child in graph[parent].get('children', []):
+            if counter.get(child) is None:
+                counter[child] = 0
+            counter[child] += 1
+    # Add parent count data to each node.
+    for project_name in graph:
+        graph[project_name]['parent_count'] = counter.get(project_name, 0)
+
+
 def interpolate_rgb(rgb_lo, rgb_hi, param):
     def interpolate(a, b, param):
         return int(a * (1 - param) + b * param)
@@ -155,6 +168,11 @@ def to_graphviz(graph):
         if height is not None:
             node_text += f'\nheight:{height}'
 
+        # Display parent count.
+        parents = graph[package_name].get('parent_count')
+        if parents is not None:
+            node_text += f'\nparents:{parents}'
+
         # Display bazel status and color.
         bazel_path = graph[package_name].get('bazel_path')
         if bazel_path:
@@ -178,7 +196,8 @@ def to_graphviz(graph):
     return dot
 
 
-def calculate_table_data(graph):
+def write_csv(graph, path):
+    # Generate table.
     data = []
     for package_name in graph:
         info = graph[package_name]
@@ -186,8 +205,19 @@ def calculate_table_data(graph):
             'name': package_name,
             'bazel': 'yes' if info.get('bazel_path') else 'no',
             'height': info.get('height'),
+            'parents': info.get('parent_count'),
         })
-    return data
+    # Sort by parents (desc).
+    data = sorted(data, key=lambda x: x['parents'], reverse=True)
+    # Sort by height (asc, empty at the bottom).
+    data = sorted(
+        data, key=lambda x: 1000 if x['height'] is None else x['height'], reverse=False)
+    # Write to file.
+    with open(path, 'w+') as f:
+        columns = data[0].keys()
+        writer = csv.DictWriter(f, columns)
+        writer.writeheader()
+        writer.writerows(data)
 
 
 def main():
@@ -206,13 +236,9 @@ def main():
     RED = (255, 0, 0)
     YELLOW = (255, 255, 0)
     add_height_color(subtree, RED, YELLOW)
+    add_parent_count(subtree)
 
-    data = calculate_table_data(subtree)
-    with open(CSV_FILE, 'w+') as f:
-        columns = data[0].keys()
-        writer = csv.DictWriter(f, columns)
-        writer.writeheader()
-        writer.writerows(data)
+    write_csv(subtree, CSV_FILE)
 
     dot = to_graphviz(subtree)
     dot.render(GRAPH_FILES, view=True)
