@@ -64,7 +64,7 @@ ic-crypto-internal-csp,no,9,1
 ic-crypto,no,10,1
 ic-canister-sandbox-backend-lib,no,10,1
 ic-canister-sandbox-replica-controller,no,11,1
-ic-execution-environment,no,12,1
+ic-execution-environment,no,12,0
 ic-crypto-sha,yes,,16
 ic-crypto-internal-sha2,yes,,2
 ic-btc-types,yes,,1
