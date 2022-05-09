@@ -1,0 +1,14 @@
+name,bazel,height,parents
+ic-protobuf,no,0,7
+ic-error-types,no,0,2
+ic-constants,no,0,1
+ic-utils,no,0,1
+ic-crypto-internal-types,no,1,2
+ic-base-types,no,1,2
+ic-btc-types-internal,no,1,1
+ic-registry-transport,no,1,1
+ic-crypto-tree-hash,no,2,1
+ic-ic00-types,no,2,1
+ic-types,no,3,1
+ic-crypto-sha,yes,,3
+ic-crypto-internal-sha2,yes,,1

@@ -3,8 +3,14 @@ import os
 import csv
 import copy
 import toml
+import argparse
 import graphviz
 from pathlib import Path
+
+
+FAKE_ROOT = 'fake-root'
+RED = (255, 0, 0)
+YELLOW = (255, 255, 0)
 
 
 def read(path):
@@ -12,7 +18,7 @@ def read(path):
         return f.read()
 
 
-def build_graph(source_dir):
+def build_graph(source_dir, ic_packages_only=True):
     # Collect Cargo.toml paths.
     data = [
         {
@@ -35,11 +41,12 @@ def build_graph(source_dir):
         info = entry.get('cargo_toml', {})
         package_name = info.get('package', {}).get('name', '')
         # Skip packages without 'ic-*' prefix.
-        if not package_name.startswith('ic-'):
+        if ic_packages_only and not package_name.startswith('ic-'):
             continue
         children = info.get('dependencies', {}).keys()
         # Skip dependencies without 'ic-*' prefix.
-        children = [x for x in children if x.startswith('ic-')]
+        if ic_packages_only:
+            children = [x for x in children if x.startswith('ic-')]
         children = sorted(children, reverse=False)  # Stabilaze data.
         graph[package_name] = {
             'bazel_path': entry.get('bazel_path'),
@@ -81,19 +88,25 @@ def extract_subtree(graph, target_package):
             roots.discard(child)
 
     # Link all the roots to a fake root.
-    FAKE_ROOT = 'none'
     graph[FAKE_ROOT] = {'children': roots}
     print(f'Root nodes linked to "{FAKE_ROOT}": {len(roots)}')
 
-    if target_package is None or len(str(target_package).strip()) == 0:
-        # Add extra fake root for 'target_package' entry point.
-        graph[target_package] = graph[FAKE_ROOT]
+    all_packages_keywords = [
+        'None',
+        'none',
+        'default',
+        '.',
+        'all',
+        '',
+    ]
+    if str(target_package).strip() in all_packages_keywords:
         return graph
 
     # Extract target package subtree.
     path = []
     mark_subtree(graph, FAKE_ROOT, target_package, path)
     subtree = remove_unwanted_nodes(graph)
+    subtree[FAKE_ROOT] = {'children': [target_package]}
 
     return subtree
 
@@ -113,8 +126,11 @@ def add_height(graph, current):
         return height
     for child in info.get('children', []):
         height = max(height, add_height(graph, child))
-    info['height'] = height + 1
-    return info['height']
+    result = height + 1
+    # Skip fake root node.
+    if current != FAKE_ROOT:
+        info['height'] = result
+    return result
 
 
 def add_parent_count(graph):
@@ -126,8 +142,11 @@ def add_parent_count(graph):
                 counter[child] = 0
             counter[child] += 1
     # Add parent count data to each node.
-    for project_name in graph:
-        graph[project_name]['parent_count'] = counter.get(project_name, 0)
+    for package_name in graph:
+        # Skip fake root node.
+        if package_name == FAKE_ROOT:
+            continue
+        graph[package_name]['parent_count'] = counter.get(package_name, 0)
 
 
 def interpolate_rgb(rgb_lo, rgb_hi, param):
@@ -162,6 +181,10 @@ def to_graphviz(graph):
 
     # Create nodes.
     for package_name in graph.keys():
+        # Skip fake root node.
+        if package_name == FAKE_ROOT:
+            continue
+
         node_text = f'{package_name}'
         fillcolor = 'grey'  # default
 
@@ -191,6 +214,9 @@ def to_graphviz(graph):
 
     # Create edges.
     for package_name in graph.keys():
+        # Skip fake root node.
+        if package_name == FAKE_ROOT:
+            continue
         for child in graph[package_name].get('children', []):
             dot.edge(package_name, child)
 
@@ -202,6 +228,9 @@ def write_csv(graph, path):
     # Generate table.
     data = []
     for package_name in graph:
+        # Skip fake root node.
+        if package_name == FAKE_ROOT:
+            continue
         info = graph[package_name]
         data.append({
             'name': package_name,
@@ -210,10 +239,12 @@ def write_csv(graph, path):
             'parents': info.get('parent_count'),
         })
     # Sort by parents (desc).
-    data = sorted(data, key=lambda x: x['parents'], reverse=True)
+    data = sorted(data, key=lambda x: x['parents']
+                  if x['parents'] is not None else 0, reverse=True)
     # Sort by height (asc, empty at the bottom).
+    MAX_HEIGHT = 1000*1000*1000
     data = sorted(
-        data, key=lambda x: 1000 if x['height'] is None else x['height'], reverse=False)
+        data, key=lambda x: x['height'] if x['height'] is not None else MAX_HEIGHT, reverse=False)
     # Write to file.
     with open(path, 'w+') as f:
         columns = data[0].keys()
@@ -222,31 +253,52 @@ def write_csv(graph, path):
         writer.writerows(data)
 
 
-def main():
-    SOURCE_DIR = '../ic/rs/'
-    # ROOT_PACKAGE = 'none'  # 'none' for all the packages
-    ROOT_PACKAGE = 'ic-ic00-types'
-    #ROOT_PACKAGE = 'ic-types'
-    #ROOT_PACKAGE = 'ic-execution-environment'
-    GRAPH_FILES = './output/graph.gv'
-    CSV_FILE = './output/packages.csv'
+def str2bool(v):
+    if isinstance(v, bool):
+        return v
+    if v.lower() in ('yes', 'true', 't', 'y', '1'):
+        return True
+    elif v.lower() in ('no', 'false', 'f', 'n', '0'):
+        return False
+    else:
+        raise argparse.ArgumentTypeError('Boolean value expected.')
 
-    graph = build_graph(SOURCE_DIR)
-    subtree = extract_subtree(graph, ROOT_PACKAGE)
+
+def main():
+    # Parse agruments.
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        '-sd', '--source_dir', help='source directory', default='../ic/rs/')
+    parser.add_argument('-rp', '--root_package',
+                        help='root package', default=None)
+    parser.add_argument(
+        '-gp', '--graphviz_path', help='graphviz output files', default='./output/graph.gv')
+    parser.add_argument(
+        '-gv', '--graphviz_view', help='graphviz view', type=str2bool, default=False)
+    parser.add_argument(
+        '-csv', '--csv_path', help='CSV output file', default='./output/packages.csv')
+    parser.add_argument(
+        '-ic', '--ic_only', help='show only packages with "ic-" prefix', type=str2bool, default=True)
+    args = parser.parse_args()
+
+    # Generate graph of package dependencies.
+    graph = build_graph(args.source_dir, ic_packages_only=args.ic_only)
+    subtree = extract_subtree(graph, args.root_package)
     bazel_n, total, ratio = calculate_progress(subtree)
     print(
         f'Packages converted to Bazel: {bazel_n} / {total} ({100*ratio:>5.01f}%)')
 
-    add_height(subtree, ROOT_PACKAGE)
-    RED = (255, 0, 0)
-    YELLOW = (255, 255, 0)
+    # Calculate attributes (height, parents, color).
+    add_height(subtree, FAKE_ROOT)
     add_height_color(subtree, RED, YELLOW)
     add_parent_count(subtree)
 
-    write_csv(subtree, CSV_FILE)
+    # Write CSV output.
+    write_csv(subtree, args.csv_path)
 
+    # Generate Graphviz.
     dot = to_graphviz(subtree)
-    dot.render(GRAPH_FILES, view=True)
+    dot.render(args.graphviz_path, view=args.graphviz_view)
 
 
 if __name__ == '__main__':
