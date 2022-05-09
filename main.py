@@ -40,6 +40,7 @@ def build_graph(source_dir, ic_packages_only=True):
     for entry in data:
         info = entry.get('cargo_toml', {})
         package_name = info.get('package', {}).get('name', '')
+
         # Skip packages without 'ic-*' prefix.
         if ic_packages_only and not package_name.startswith('ic-'):
             continue
@@ -106,6 +107,8 @@ def extract_subtree(graph, target_package):
     path = []
     mark_subtree(graph, FAKE_ROOT, target_package, path)
     subtree = remove_unwanted_nodes(graph)
+
+    # Add fake root to a subtree.
     subtree[FAKE_ROOT] = {'children': [target_package]}
 
     return subtree
@@ -141,6 +144,7 @@ def add_parent_count(graph):
             if counter.get(child) is None:
                 counter[child] = 0
             counter[child] += 1
+
     # Add parent count data to each node.
     for package_name in graph:
         # Skip fake root node.
@@ -207,7 +211,7 @@ def to_graphviz(graph):
         # Display not converted node color.
         color = graph[package_name].get('color')
         if color is not None:
-            #node_text += f'\ncolor:{color}'
+            # node_text += f'\ncolor:{color}'
             fillcolor = color
 
         dot.node(package_name, node_text, style='filled', fillcolor=fillcolor)
@@ -238,19 +242,19 @@ def write_csv(graph, path):
             'height': info.get('height'),
             'parents': info.get('parent_count'),
         })
-    # Sort by parents (desc).
-    data = sorted(data, key=lambda x: x['parents']
-                  if x['parents'] is not None else 0, reverse=True)
-    # Sort by height (asc, empty at the bottom).
-    MAX_HEIGHT = 1000*1000*1000
-    data = sorted(
-        data, key=lambda x: x['height'] if x['height'] is not None else MAX_HEIGHT, reverse=False)
-    # Write to file.
-    with open(path, 'w+') as f:
-        columns = data[0].keys()
-        writer = csv.DictWriter(f, columns)
-        writer.writeheader()
-        writer.writerows(data)
+        # Sort by parents (desc).
+        data = sorted(data, key=lambda x: x['parents']
+                      if x['parents'] is not None else 0, reverse=True)
+        # Sort by height (asc, empty at the bottom).
+        MAX_HEIGHT = 1000*1000*1000
+        data = sorted(
+            data, key=lambda x: x['height'] if x['height'] is not None else MAX_HEIGHT, reverse=False)
+        # Write to file.
+        with open(path, 'w+') as f:
+            columns = data[0].keys()
+            writer = csv.DictWriter(f, columns)
+            writer.writeheader()
+            writer.writerows(data)
 
 
 def str2bool(v):
@@ -284,6 +288,7 @@ def main():
     # Generate graph of package dependencies.
     graph = build_graph(args.source_dir, ic_packages_only=args.ic_only)
     subtree = extract_subtree(graph, args.root_package)
+
     bazel_n, total, ratio = calculate_progress(subtree)
     print(
         f'Packages converted to Bazel: {bazel_n} / {total} ({100*ratio:>5.01f}%)')
