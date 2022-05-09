@@ -139,8 +139,11 @@ def add_height(graph, current):
 def add_parent_count(graph):
     # Count number of parents for each child.
     counter = {}
-    for parent in graph:
-        for child in graph[parent].get('children', []):
+    for package_name in graph:
+        # Skip fake root node.
+        if package_name == FAKE_ROOT:
+            continue
+        for child in graph[package_name].get('children', []):
             if counter.get(child) is None:
                 counter[child] = 0
             counter[child] += 1
