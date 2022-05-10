@@ -17,6 +17,7 @@ Help with `Cargo`-to-`Bazel` migration for the [Internet Computer](https://githu
 
 ### ic-ic00-types
 ![Example](./images/ic-ic00-types.png)
+![Example](./images/ic-ic00-types-3p.png)
 
 ### ic-types
 ![Example](./images/ic-types.png)

@@ -18,7 +18,7 @@ def read(path):
         return f.read()
 
 
-def build_graph(source_dir, ic_packages_only=True):
+def build_graph(source_dir, skip_3rd_party):
     # Collect Cargo.toml paths.
     data = [
         {
@@ -35,19 +35,24 @@ def build_graph(source_dir, ic_packages_only=True):
         if os.path.exists(path):
             entry['bazel_path'] = path
 
+    # Collect all package names.
+    if skip_3rd_party:
+        packages = [
+            x.get('cargo_toml', {}).get('package', {}).get('name')
+            for x in data
+        ]
+        packages = set([x for x in packages if x is not None])
+
     # Build graph.
     graph = {}
     for entry in data:
         info = entry.get('cargo_toml', {})
         package_name = info.get('package', {}).get('name', '')
 
-        # Skip packages without 'ic-*' prefix.
-        if ic_packages_only and not package_name.startswith('ic-'):
-            continue
         children = info.get('dependencies', {}).keys()
-        # Skip dependencies without 'ic-*' prefix.
-        if ic_packages_only:
-            children = [x for x in children if x.startswith('ic-')]
+        # Skip 3rd party package dependencies.
+        if skip_3rd_party:
+            children = [x for x in children if x in packages]
         children = sorted(children, reverse=False)  # Stabilaze data.
         graph[package_name] = {
             'bazel_path': entry.get('bazel_path'),
@@ -285,11 +290,12 @@ def main():
     parser.add_argument(
         '-csv', '--csv_path', help='CSV output file', default='./output/packages.csv')
     parser.add_argument(
-        '-ic', '--ic_only', help='show only packages with "ic-" prefix', type=str2bool, default=True)
+        '-s3p', '--skip_3rd_party', help='skip 3rd party package dependencies', type=str2bool, default=True)
     args = parser.parse_args()
 
     # Generate graph of package dependencies.
-    graph = build_graph(args.source_dir, ic_packages_only=args.ic_only)
+    graph = build_graph(
+        args.source_dir, skip_3rd_party=args.skip_3rd_party)
     subtree = extract_subtree(graph, args.root_package)
 
     bazel_n, total, ratio = calculate_progress(subtree)
