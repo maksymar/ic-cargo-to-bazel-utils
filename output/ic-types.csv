@@ -11,4 +11,5 @@ ic-crypto-tree-hash,no,2,1
 ic-ic00-types,no,2,1
 ic-types,no,3,0
 ic-crypto-sha,yes,,3
+phantom_newtype,yes,,3
 ic-crypto-internal-sha2,yes,,1
