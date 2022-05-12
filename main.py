@@ -18,7 +18,11 @@ def read(path):
         return f.read()
 
 
-def build_graph(source_dir, skip_3rd_party):
+def dev_name(name):
+    return f'{name}-[dev]'
+
+
+def build_graph(source_dir, skip_3rd_party, dev_dependencies):
     # Collect Cargo.toml paths.
     data = [
         {
@@ -49,7 +53,7 @@ def build_graph(source_dir, skip_3rd_party):
         info = entry.get('cargo_toml', {})
         package_name = info.get('package', {}).get('name', '')
 
-        children = info.get('dependencies', {}).keys()
+        children = list(info.get('dependencies', {}).keys())
         # Skip 3rd party package dependencies.
         if skip_3rd_party:
             children = [x for x in children if x in packages]
@@ -58,6 +62,20 @@ def build_graph(source_dir, skip_3rd_party):
             'bazel_path': entry.get('bazel_path'),
             'children': children,
         }
+
+        children_dev = list(info.get('dev-dependencies', {}).keys())
+        if dev_dependencies and len(children_dev) > 0:
+            # Skip 3rd party package dependencies.
+            if skip_3rd_party:
+                children_dev = [x for x in children_dev if x in packages]
+            # Stabilaze data.
+            children_dev = sorted(children_dev, reverse=False)
+            package_name_dev = dev_name(package_name)
+            graph[package_name_dev] = {
+                'bazel_path': entry.get('bazel_path'),
+                'children': children_dev,
+            }
+            graph[package_name_dev]['children'] += [package_name]
 
     return graph
 
@@ -87,6 +105,11 @@ def remove_unwanted_nodes(graph):
 
 
 def extract_subtree(graph, target_package):
+    # Add dev-node on top if exists.
+    new_root = dev_name(target_package)
+    if graph.get(new_root) is not None:
+        target_package = new_root
+
     # Get roots.
     roots = set(graph.keys())
     for package_name in graph:
@@ -291,11 +314,13 @@ def main():
         '-csv', '--csv_path', help='CSV output file', default='./output/packages.csv')
     parser.add_argument(
         '-s3p', '--skip_3rd_party', help='skip 3rd party package dependencies', type=str2bool, default=True)
+    parser.add_argument(
+        '-dev', '--dev_dependencies', help='show dev-dependencies', type=str2bool, default=True)
     args = parser.parse_args()
 
     # Generate graph of package dependencies.
     graph = build_graph(
-        args.source_dir, skip_3rd_party=args.skip_3rd_party)
+        args.source_dir, skip_3rd_party=args.skip_3rd_party, dev_dependencies=args.dev_dependencies)
     subtree = extract_subtree(graph, args.root_package)
 
     bazel_n, total, ratio = calculate_progress(subtree)
