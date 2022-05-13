@@ -5,11 +5,11 @@ ic-types,no,1,0
 ic-protobuf,yes,,7
 ic-crypto-sha,yes,,3
 phantom_newtype,yes,,3
+ic-base-types,yes,,2
 ic-crypto-internal-types,yes,,2
 ic-error-types,yes,,2
-ic-base-types,yes,,2
+ic-btc-types-internal,yes,,1
+ic-constants,yes,,1
 ic-crypto-internal-sha2,yes,,1
 ic-ic00-types,yes,,1
-ic-constants,yes,,1
 ic-utils,yes,,1
-ic-btc-types-internal,yes,,1

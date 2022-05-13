@@ -51,7 +51,9 @@ def build_graph(source_dir, skip_3rd_party, dev_dependencies):
     graph = {}
     for entry in data:
         info = entry.get('cargo_toml', {})
-        package_name = info.get('package', {}).get('name', '')
+        package_name = info.get('package', {}).get('name')
+        if package_name is None:
+            continue
 
         children = list(info.get('dependencies', {}).keys())
         # Skip 3rd party package dependencies.
@@ -273,6 +275,8 @@ def write_csv(graph, path):
             'height': info.get('height'),
             'parents': info.get('parent_count'),
         })
+        # Sort by name (asc).
+        data = sorted(data, key=lambda x: x['name'], reverse=False)
         # Sort by parents (desc).
         data = sorted(data, key=lambda x: x['parents']
                       if x['parents'] is not None else 0, reverse=True)

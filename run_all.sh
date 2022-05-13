@@ -9,7 +9,6 @@ GRAPHVIZ_VIEW=no     # yes/no
 SKIP_3RD_PARTY=yes   # yes/no
 DEV_DEPENDENCIES=no  # yes/no
 
-# All
 PACKAGE=all
 ./main.py \
   --source_dir ${SOURCE_DIR} \
@@ -20,7 +19,6 @@ PACKAGE=all
   --skip_3rd_party ${SKIP_3RD_PARTY} \
   --dev_dependencies ${DEV_DEPENDENCIES}
 
-# ic-execution-environment
 PACKAGE=ic-execution-environment
 ./main.py \
   --source_dir ${SOURCE_DIR} \
@@ -31,7 +29,6 @@ PACKAGE=ic-execution-environment
   --skip_3rd_party ${SKIP_3RD_PARTY} \
   --dev_dependencies ${DEV_DEPENDENCIES}
 
-# ic-types
 PACKAGE=ic-types
 ./main.py \
   --source_dir ${SOURCE_DIR} \
@@ -42,7 +39,6 @@ PACKAGE=ic-types
   --skip_3rd_party ${SKIP_3RD_PARTY} \
   --dev_dependencies ${DEV_DEPENDENCIES}
 
-# ic-ic00-types
 PACKAGE=ic-ic00-types
 ./main.py \
   --source_dir ${SOURCE_DIR} \
@@ -53,7 +49,6 @@ PACKAGE=ic-ic00-types
   --skip_3rd_party ${SKIP_3RD_PARTY} \
   --dev_dependencies ${DEV_DEPENDENCIES}
 
-# ic-metrics
 PACKAGE=ic-metrics
 ./main.py \
   --source_dir ${SOURCE_DIR} \

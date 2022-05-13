@@ -1,8 +1,8 @@
 name,bazel,height,parents
 ic-protobuf,yes,,2
+ic-base-types,yes,,1
 ic-crypto-internal-sha2,yes,,1
 ic-crypto-sha,yes,,1
 ic-error-types,yes,,1
-ic-base-types,yes,,1
 phantom_newtype,yes,,1
 ic-ic00-types,yes,,0
