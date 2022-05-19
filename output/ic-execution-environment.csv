@@ -5,7 +5,6 @@ ic-registry-transport,no,0,3
 ic-crypto-internal-logmon,no,0,2
 ic-registry-common-proto,no,0,2
 fe-derive,no,0,1
-ic-crypto-internal-threshold-sig-bls12381-der,no,0,1
 ic-types,no,1,34
 ic-config,no,2,10
 ic-crypto-internal-basic-sig-der-utils,no,2,8
@@ -72,5 +71,6 @@ ic-crypto-internal-test-vectors,yes,,2
 ic-certification-version,yes,,1
 ic-context-logger,yes,,1
 ic-crypto-internal-hmac,yes,,1
+ic-crypto-internal-threshold-sig-bls12381-der,yes,,1
 stable-structures,yes,,1
 tree-deserializer,yes,,1

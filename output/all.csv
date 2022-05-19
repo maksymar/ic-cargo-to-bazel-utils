@@ -7,11 +7,11 @@ dfn_macro,no,0,6
 ic-interfaces-transport,no,0,5
 ic-registry-common-proto,no,0,5
 ic-crypto-internal-fs-ni-dkg,no,0,4
+ic-crypto-utils-threshold-sig-der,no,0,3
 lifeline,no,0,3
 ic-btc-service,no,0,2
 ic-canister-http-service,no,0,2
 ic-crypto-internal-logmon,no,0,2
-ic-crypto-internal-threshold-sig-bls12381-der,no,0,2
 ic-nns-gtc-accounts,no,0,2
 ic-universal-canister,no,0,2
 fe-derive,no,0,1
@@ -44,7 +44,6 @@ ic-types,no,1,108
 dfn_candid,no,1,23
 dfn_protobuf,no,1,11
 ic-interfaces-bitcoin-adapter-client,no,1,4
-ic-crypto-utils-threshold-sig-der,no,1,3
 xnet-test,no,1,2
 memory-test,no,1,0
 pmap,no,1,0
@@ -78,8 +77,8 @@ ic-replicated-state,no,4,27
 ic-canister-client,no,4,18
 ic-registry-proto-data-provider,no,4,17
 ledger-canister,no,4,17
-ic-registry-client-fake,no,4,12
 ic-registry-local-store,no,4,12
+ic-registry-client-fake,no,4,11
 ic-crypto-utils-threshold-sig,no,4,9
 ic-crypto-utils-basic-sig,no,4,7
 ic-crypto-hash,no,4,6
@@ -97,6 +96,7 @@ ic-canister-http-adapter-client,no,4,0
 ic-certified-vars-test-utils,no,4,0
 ic-ckbtc-minter,no,4,0
 ic-crypto-internal-basic-sig-ecdsa-wycheproof,no,4,0
+ic-registry-client,no,5,14
 ic-cycles-account-manager,no,5,13
 ic-nervous-system-common,no,5,11
 ic-consensus-message,no,5,8
@@ -124,7 +124,6 @@ ic-crypto-internal-basic-sig-iccsa,no,6,2
 ic-btc-canister,no,6,1
 ic-xnet-payload-builder,no,6,1
 ic-workload-generator,no,6,0
-ic-registry-client,no,7,14
 cycles-minting-canister,no,7,6
 ic-embedders,no,7,4
 ic-canister-sandbox-common,no,7,3
@@ -133,16 +132,16 @@ ic-crypto-internal-csp,no,7,2
 ic-cup-explorer,no,7,2
 ic-registry-local-registry,no,7,2
 ic-sns-root,no,7,2
+ic-registry-replicator,no,7,1
+boundary-node-control-plane,no,7,0
+ic-regedit,no,7,0
 ic-state-tool,no,7,0
 ic-crypto,no,8,21
 registry-canister,no,8,7
 ic-canister-sandbox-backend-lib,no,8,4
 ic-canister-sandbox-launcher,no,8,2
 ic-crypto-internal-csp-test-utils,no,8,1
-ic-registry-replicator,no,8,1
-boundary-node-control-plane,no,8,0
 ic-p8s-service-discovery,no,8,0
-ic-regedit,no,8,0
 ic-nns-governance,no,9,11
 ic-prep,no,9,6
 ic-artifact-pool,no,9,4
@@ -220,6 +219,7 @@ ic-crypto-internal-test-vectors,yes,,3
 elastic_common_schema,yes,,2
 ic-certification-version,yes,,2
 ic-crypto-internal-sha2,yes,,2
+ic-crypto-internal-threshold-sig-bls12381-der,yes,,2
 log_analyzer,yes,,2
 ic-btc-validation,yes,,1
 ic-context-logger,yes,,1

@@ -5,7 +5,7 @@ import unittest
 
 class TestBazel(unittest.TestCase):
 
-    def test_upper(self):
+    def test_loads(self):
         text = '''
 load("@rules_rust//rust:defs.bzl", "rust_library", "rust_test")
 
@@ -72,6 +72,43 @@ rust_test_suite(
                 'name': 'tests',
             }
         ])
+
+    def test_is_bazelized_bin_or_lib_name(self):
+        crate = 'phantom_newtype'
+        data = bazel.loads('''
+rust_library(
+    name = "phantom_newtype",
+)
+''')
+        self.assertTrue(bazel.is_bazelized_bin_or_lib(crate, data))
+        self.assertFalse(bazel.is_bazelized_test(crate, data))
+
+    def test_is_bazelized_bin_or_lib_crate_name(self):
+        crate = 'ic-crypto-internal-threshold-sig-bls12381-der'
+        data = bazel.loads('''
+rust_library(
+    name = "der_utils",
+    crate_name = "ic_crypto_internal_threshold_sig_bls12381_der",
+)
+''')
+        self.assertTrue(bazel.is_bazelized_bin_or_lib(crate, data))
+        self.assertFalse(bazel.is_bazelized_test(crate, data))
+
+    def test_is_bazelized_test(self):
+        crate = 'ic-crypto-internal-bls12381-serde-miracl'
+        data = bazel.loads('''
+rust_library(
+    name = "miracl",
+    crate_name = "ic_crypto_internal_bls12381_serde_miracl",
+)
+
+rust_test(
+    name = "miracl_test",
+    crate = ":miracl",
+)
+''')
+        self.assertTrue(bazel.is_bazelized_bin_or_lib(crate, data))
+        self.assertTrue(bazel.is_bazelized_test(crate, data))
 
 
 if __name__ == '__main__':

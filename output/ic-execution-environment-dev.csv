@@ -6,7 +6,6 @@ ic-interfaces-transport,no,0,4
 ic-crypto-internal-fs-ni-dkg,no,0,3
 ic-crypto-internal-logmon,no,0,2
 fe-derive,no,0,1
-ic-crypto-internal-threshold-sig-bls12381-der,no,0,1
 ic-universal-canister,no,0,1
 ic-types,no,1,56
 ic-interfaces-bitcoin-adapter-client,no,1,1
@@ -29,8 +28,8 @@ ic-crypto-internal-basic-sig-ecdsa-secp256k1,no,3,1
 ic-replicated-state,no,4,16
 ic-registry-client-helpers,no,4,8
 ic-crypto-hash,no,4,6
-ic-registry-client-fake,no,4,6
 ic-registry-proto-data-provider,no,4,6
+ic-registry-client-fake,no,4,5
 ic-canister-client,no,4,2
 ic-crypto-utils-threshold-sig,no,4,2
 ic-crypto-internal-basic-sig-cose,no,4,1
@@ -46,17 +45,17 @@ memory_tracker,no,5,3
 ic-certified-vars,no,5,2
 ic-ecdsa-object,no,5,2
 ic-canonical-state,no,5,1
+ic-registry-client,no,5,1
 ic-system-api,no,6,6
 ic-artifact-manager,no,6,2
 ic-crypto-internal-basic-sig-iccsa,no,6,2
-ic-registry-common,no,6,2
 ic-btc-canister,no,6,1
+ic-registry-common,no,6,1
 ic-state-manager,no,6,1
 ic-embedders,no,7,4
 ic-canister-sandbox-common,no,7,2
 ic-crypto-internal-csp,no,7,2
 ic-p2p,no,7,2
-ic-registry-client,no,7,1
 ic-crypto,no,8,8
 ic-canister-sandbox-backend-lib,no,8,1
 ic-crypto-internal-csp-test-utils,no,8,1
@@ -101,4 +100,5 @@ ic-crypto-internal-sha2,yes,,2
 ic-btc-test-utils,yes,,1
 ic-context-logger,yes,,1
 ic-crypto-internal-hmac,yes,,1
+ic-crypto-internal-threshold-sig-bls12381-der,yes,,1
 stable-structures,yes,,1
