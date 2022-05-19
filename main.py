@@ -3,6 +3,7 @@ import os
 import csv
 import copy
 import toml
+import bazel
 import argparse
 import graphviz
 from pathlib import Path
@@ -22,6 +23,16 @@ def dev_name(name):
     return f'{name}-[dev]'
 
 
+def is_bazelized(package_name, data):
+    crate_name = package_name.replace('-', '_')
+    for x in data:
+        if crate_name in [x.get('name'), x.get('crate_name')]:
+            return True
+        if f'{crate_name}_test' == x.get('name'):
+            return True
+    return False
+
+
 def build_graph(source_dir, skip_3rd_party, dev_dependencies):
     # Collect Cargo.toml paths.
     data = [
@@ -37,7 +48,7 @@ def build_graph(source_dir, skip_3rd_party, dev_dependencies):
     for entry in data:
         path = str(entry['cargo_path']).replace('Cargo.toml', 'BUILD.bazel')
         if os.path.exists(path):
-            entry['bazel_path'] = path
+            entry['build_bazel'] = bazel.loads(read(path))
 
     # Collect all package names.
     if skip_3rd_party:
@@ -55,13 +66,21 @@ def build_graph(source_dir, skip_3rd_party, dev_dependencies):
         if package_name is None:
             continue
 
+        build_bazel = entry.get('build_bazel', [])
+        binaries_or_libs = [
+            x for x in build_bazel if x.get('rule') in ['rust_library', 'rust_binary']
+        ]
+        tests_or_suites = [
+            x for x in build_bazel if x.get('rule') in ['rust_test', 'rust_test_suite']
+        ]
+
         children = list(info.get('dependencies', {}).keys())
         # Skip 3rd party package dependencies.
         if skip_3rd_party:
             children = [x for x in children if x in packages]
         children = sorted(children, reverse=False)  # Stabilaze data.
         graph[package_name] = {
-            'bazel_path': entry.get('bazel_path'),
+            'bazelized': is_bazelized(package_name, binaries_or_libs),
             'children': children,
         }
 
@@ -74,7 +93,7 @@ def build_graph(source_dir, skip_3rd_party, dev_dependencies):
             children_dev = sorted(children_dev, reverse=False)
             package_name_dev = dev_name(package_name)
             graph[package_name_dev] = {
-                'bazel_path': entry.get('bazel_path'),
+                'bazelized': is_bazelized(package_name, tests_or_suites),
                 'children': children_dev,
             }
             graph[package_name_dev]['children'] += [package_name]
@@ -145,7 +164,7 @@ def extract_subtree(graph, target_package):
 
 
 def calculate_progress(graph):
-    bazel_n = sum([1 for x in graph if graph[x].get('bazel_path') is not None])
+    bazel_n = sum([1 for x in graph if graph[x].get('bazelized') is True])
     total = len(graph.keys())
     ratio = bazel_n / total
     return (bazel_n, total, ratio)
@@ -155,7 +174,7 @@ def add_height(graph, current):
     info = graph.get(current)
     height = -1
     # Skip packages with Bazel.
-    if info is None or info.get('bazel_path') is not None:
+    if info is None or info.get('bazelized', False):
         return height
     for child in info.get('children', []):
         height = max(height, add_height(graph, child))
@@ -236,8 +255,7 @@ def to_graphviz(graph):
             node_text += f'\nparents:{parents}'
 
         # Display bazel status and color.
-        bazel_path = graph[package_name].get('bazel_path')
-        if bazel_path:
+        if graph[package_name].get('bazelized'):
             node_text += f'\nbazel:yes'
             fillcolor = 'green'
 
@@ -271,7 +289,7 @@ def write_csv(graph, path):
         info = graph[package_name]
         data.append({
             'name': package_name,
-            'bazel': 'yes' if info.get('bazel_path') else 'no',
+            'bazel': 'yes' if info.get('bazelized') else 'no',
             'height': info.get('height'),
             'parents': info.get('parent_count'),
         })
