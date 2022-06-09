@@ -328,6 +328,7 @@ def main():
     graph = build_graph(
         args.source_dir, skip_3rd_party=args.skip_3rd_party, dev_dependencies=args.dev_dependencies)
     subtree = extract_subtree(graph, args.root_package)
+    print(f'Root package: {args.root_package}')
 
     bazel_n, total, ratio = calculate_progress(subtree)
     print(

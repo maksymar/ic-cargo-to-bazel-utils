@@ -35,6 +35,17 @@ rust_library(
     edition = "2018",
 )
 
+rust_proc_macro(
+    name = "fe-derive",
+    srcs = glob(["src/**"]),
+    crate_name = "fe_derive",
+    edition = "2018",
+    deps = [
+        "@crate_index//:hex",
+        "@crate_index//:num-bigint-dig",
+    ],
+)
+
 rust_test(
     name = "der_utils_test",
     crate = ":der_utils",
@@ -61,6 +72,11 @@ rust_test_suite(
                 'rule': 'rust_library',
                 'name': 'der_utils',
                 'crate_name': 'ic_crypto_internal_threshold_sig_bls12381_der',
+            },
+            {
+                'rule': 'rust_proc_macro',
+                'name': 'fe-derive',
+                'crate_name': 'fe_derive',
             },
             {
                 'rule': 'rust_test',

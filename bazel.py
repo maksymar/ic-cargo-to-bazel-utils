@@ -21,6 +21,10 @@ def loads(text):
             entry['rule'] = 'rust_binary'
             continue
 
+        if line == 'rust_proc_macro(':
+            entry['rule'] = 'rust_proc_macro'
+            continue
+
         if line == 'rust_test(':
             entry['rule'] = 'rust_test'
             continue
@@ -42,7 +46,7 @@ def loads(text):
             continue
 
         if line == ')':
-            if entry.get('rule') in ['rust_library', 'rust_binary', 'rust_test', 'rust_test_suite']:
+            if entry.get('rule') in ['rust_library', 'rust_binary', 'rust_proc_macro', 'rust_test', 'rust_test_suite']:
                 result.append(entry)
 
             entry = {}
@@ -55,7 +59,7 @@ def is_bazelized_bin_or_lib(package_name, data):
     crate_name = package_name.replace('-', '_')
 
     binaries_or_libs = [
-        x for x in data if x.get('rule') in ['rust_library', 'rust_binary']
+        x for x in data if x.get('rule') in ['rust_library', 'rust_binary', 'rust_proc_macro']
     ]
     for x in binaries_or_libs:
         if crate_name in [x.get('name'), x.get('crate_name')]:
@@ -67,7 +71,7 @@ def is_bazelized_test(package_name, data):
     crate_name = package_name.replace('-', '_')
 
     binaries_or_libs = [
-        x for x in data if x.get('rule') in ['rust_library', 'rust_binary']
+        x for x in data if x.get('rule') in ['rust_library', 'rust_binary', 'rust_proc_macro']
     ]
     tests_or_suites = [
         x for x in data if x.get('rule') in ['rust_test', 'rust_test_suite']
