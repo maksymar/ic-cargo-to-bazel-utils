@@ -24,7 +24,7 @@ $ cd bazel-migration-order
 $ git clone git@github.com:dfinity/ic.git
 $ git clone git@github.com:maksymar/ic-cargo-to-bazel-utils.git
 
-# Run inspection
+# Run analysis
 $ cd ic-cargo-to-bazel-utils
 $ ./run_all.sh
 
