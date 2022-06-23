@@ -28,7 +28,8 @@ $ git clone git@github.com:maksymar/ic-cargo-to-bazel-utils.git
 $ cd ic-cargo-to-bazel-utils
 $ ./run_all.sh
 
-# Inspect output:
+# Inspect output
+# Note: pay attention to the presence of `dev` option, eg. `all` and `all-dev`
 Root package: all
 Packages with bazel / no bazel / total / progress: 141 / 100 / 241 /  58.5%
 Plotting 241 nodes with 1681 edges...
