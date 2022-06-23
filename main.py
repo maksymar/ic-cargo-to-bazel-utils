@@ -123,7 +123,7 @@ def extract_subtree(graph, target_package):
 
     # Link all the roots to a fake root.
     graph[FAKE_ROOT] = {'children': roots}
-    print(f'Root nodes linked to "{FAKE_ROOT}": {len(roots)}')
+    # print(f'Root nodes linked to "{FAKE_ROOT}": {len(roots)}')
 
     all_packages_keywords = [
         'None',
@@ -324,15 +324,19 @@ def main():
         '-dev', '--dev_dependencies', help='show dev-dependencies', type=str2bool, default=True)
     args = parser.parse_args()
 
+    # Print header.
+    dev = '-dev' if args.dev_dependencies else ''
+    print('')
+    print(f'Root package: {args.root_package}{dev}')
+
     # Generate graph of package dependencies.
     graph = build_graph(
         args.source_dir, skip_3rd_party=args.skip_3rd_party, dev_dependencies=args.dev_dependencies)
     subtree = extract_subtree(graph, args.root_package)
-    print(f'Root package: {args.root_package}')
 
     bazel_n, total, ratio = calculate_progress(subtree)
     print(
-        f'Packages converted to Bazel: {bazel_n} / {total} ({100*ratio:>5.01f}%)')
+        f'Packages with bazel / no bazel / total / progress: {bazel_n} / {total-bazel_n} / {total} / {100*ratio:>5.01f}%')
 
     # Calculate attributes (height, parents, color).
     add_height(subtree, FAKE_ROOT)
