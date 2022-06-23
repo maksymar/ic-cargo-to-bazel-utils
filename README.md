@@ -9,7 +9,7 @@ Help with Cargo-to-Bazel migration for the [Internet Computer](https://github.co
 - `main.py` script calculates for a specified root package
   - migration progress in output
   - dependent packages migration order in CSV report
-  - dependent packages dependency colored graph in PDF chart
+  - dependent packages colored dependency graph in PDF chart
 - `run_all.sh` has a predifined set of packages as example (feel free to modify for your needs)
 
 ## Notes
@@ -17,7 +17,7 @@ Help with Cargo-to-Bazel migration for the [Internet Computer](https://github.co
 - provide `-dev` flag for `main.py` to include dev-dependency processing
 - in CSV report 
   - packages are sorted by the height and the number of blocking parents (the most urgent are on top)
-- in PDF colored graph
+- in PDF colored dependency graph
   - `green` -- package is migrated
   - gradient from `red` to `yellow` -- not yet migrated package, color gradient is tree height (leaf is `red`)
 
