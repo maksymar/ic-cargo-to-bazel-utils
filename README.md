@@ -9,7 +9,7 @@ Help with Cargo-to-Bazel migration for the [Internet Computer](https://github.co
 - `main.py` script calculates for a specified root package
   - migration progress in output
   - dependent packages migration order in CSV report
-  - dependent packages colored dependency graph in PDF chart
+  - colored dependency graph in PDF chart
 - `run_all.sh` has a predifined set of packages as example (feel free to modify for your needs)
 
 ## Notes
