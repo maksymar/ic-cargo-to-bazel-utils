@@ -15,19 +15,16 @@ Help with Cargo-to-Bazel migration for the [Internet Computer](https://github.co
 
 ## Usage
 
-- create folder for experiments `bazel-migration-order`
-- clone repositories
-  - `github.com/dfinity/ic`
-  - `github.com/maksymar/ic-cargo-to-bazel-utils`
-- run `./run_all.sh` to calculate bazelization progress, write CSV reports and PDF charts
-
 ```bash
+# Create folder for experiments
 $ mkdir bazel-migration-order
 $ cd bazel-migration-order
 
+# Clone repositories
 $ git clone git@github.com:dfinity/ic.git
 $ git clone git@github.com:maksymar/ic-cargo-to-bazel-utils.git
 
+# Run inspection
 $ cd ic-cargo-to-bazel-utils
 $ ./run_all.sh
 
