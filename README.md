@@ -2,16 +2,24 @@
 
 ## Goal
 
-Help with Cargo-to-Bazel migration for the [Internet Computer](https://github.com/dfinity/ic) repository, namely with:
+Help with Cargo-to-Bazel migration for the [Internet Computer](https://github.com/dfinity/ic) repository
 
-- understanding the progress
-- optimizing the migration, by pointing to the next package for conversion
-  - graph visualization
-  - node height colors
-    - `green` converted to Bazel
-    - from `red` (leafs) to `yellow` (dependants) to be converted
-  - parent count
-  - CSV table with node height & parent count
+## How?
+
+- `main.py` script calculates for a specified root package
+  - migration progress in output
+  - dependent packages migration order in CSV report
+  - dependent packages dependency colored graph in PDF chart
+- `run_all.sh` has a predifined set of packages as example (feel free to modify for your needs)
+
+## Notes
+
+- provide `-dev` flag for `main.py` to include dev-dependency processing
+- in CSV report 
+  - packages are sorted by the height and the number of blocking parents (the most urgent are on top)
+- in PDF colored graph
+  - `green` -- package is migrated
+  - gradient from `red` to `yellow` -- not yet migrated package, color gradient is tree height (leaf is `red`)
 
 ## Usage
 
