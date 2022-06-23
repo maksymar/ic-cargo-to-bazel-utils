@@ -13,7 +13,13 @@ Help with Cargo-to-Bazel migration for the [Internet Computer](https://github.co
   - parent count
   - CSV table with node height & parent count
 
-## How To
+## Usage
+
+- create folder for experiments `bazel-migration-order`
+- clone repositories
+  - `github.com/dfinity/ic`
+  - `github.com/maksymar/ic-cargo-to-bazel-utils`
+- run `./run_all.sh` to calculate bazelization progress, write CSV reports and PDF charts
 
 ```bash
 $ mkdir bazel-migration-order
@@ -25,12 +31,11 @@ $ git clone git@github.com:maksymar/ic-cargo-to-bazel-utils.git
 $ cd ic-cargo-to-bazel-utils
 $ ./run_all.sh
 
+# Inspect output:
 Root package: all-dev
-Root nodes linked to "fake-root": 143
 Packages with bazel / no bazel / total / progress: 169 / 185 / 354 /  47.7%
 
 Root package: ic-execution-environment-dev
-Root nodes linked to "fake-root": 143
 Packages with bazel / no bazel / total / progress: 87 / 17 / 104 /  83.7%
 
 # Inspect CSV reports:

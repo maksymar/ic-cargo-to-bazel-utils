@@ -123,7 +123,7 @@ def extract_subtree(graph, target_package):
 
     # Link all the roots to a fake root.
     graph[FAKE_ROOT] = {'children': roots}
-    print(f'Root nodes linked to "{FAKE_ROOT}": {len(roots)}')
+    # print(f'Root nodes linked to "{FAKE_ROOT}": {len(roots)}')
 
     all_packages_keywords = [
         'None',
