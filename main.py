@@ -23,7 +23,7 @@ def dev_name(name):
     return f'{name}-[dev]'
 
 
-def build_graph(source_dir, skip_3rd_party, dev_dependencies):
+def build_graph(source_dir, skip_3rd_party, dev_dependencies, count_missing):
     # Collect Cargo.toml paths.
     data = [
         {
@@ -58,6 +58,7 @@ def build_graph(source_dir, skip_3rd_party, dev_dependencies):
 
         build_bazel = entry.get('build_bazel', [])
 
+        # Calculate children packages.
         children = list(info.get('dependencies', {}).keys())
         # Skip 3rd party package dependencies.
         if skip_3rd_party:
@@ -68,6 +69,8 @@ def build_graph(source_dir, skip_3rd_party, dev_dependencies):
             'children': children,
         }
 
+        # Calculate children DEV packages.
+        package_name_dev = dev_name(package_name)
         children_dev = list(info.get('dev-dependencies', {}).keys())
         if dev_dependencies and len(children_dev) > 0:
             # Skip 3rd party package dependencies.
@@ -75,12 +78,72 @@ def build_graph(source_dir, skip_3rd_party, dev_dependencies):
                 children_dev = [x for x in children_dev if x in packages]
             # Stabilaze data.
             children_dev = sorted(children_dev, reverse=False)
-            package_name_dev = dev_name(package_name)
             graph[package_name_dev] = {
                 'bazelized': bazel.is_bazelized_test(package_name, build_bazel),
                 'children': children_dev,
             }
             graph[package_name_dev]['children'] += [package_name]
+
+        # Count missing Cargo attributes in Bazel files.
+        if count_missing:
+            def has_rule(bazel_rules, rule_types, name):
+                for bazel_rule in bazel_rules:
+                    is_name_found = name in bazel_rule.get(
+                        'name', []) or name in bazel_rule.get('crate_name', [])
+                    if bazel_rule.get('rule') in rule_types and is_name_found:
+                        return True
+                return False
+
+            # Count missing `bin`.
+            missing_count = 0
+            missing_count_dev = 0
+            # Unfold array of tables `[[bin]]`.
+            blocks = entry['cargo_toml'].get('bin')
+            if blocks is not None:
+                for block in blocks:
+                    name = block.get('name')
+                    if name is None:
+                        continue
+                    if not has_rule(build_bazel, ['rust_binary', 'rust_canister'], name):
+                        if block.get('path', '').startswith('test/'):
+                            missing_count_dev += 1
+                        else:
+                            missing_count += 1
+            graph[package_name]['missing bin'] = missing_count
+            if graph.get(package_name_dev):
+                graph[package_name_dev]['missing bin'] = missing_count_dev
+
+            # Count missing `lib`.
+            missing_count = 0
+            missing_count_dev = 0
+            block = entry['cargo_toml'].get('lib')
+            if block is not None:
+                if name := block.get('name'):
+                    if not has_rule(build_bazel, ['rust_library'], name):
+                        if block.get('path', '').startswith('test/'):
+                            missing_count_dev += 1
+                        else:
+                            missing_count += 1
+            graph[package_name]['missing lib'] = missing_count
+            if graph.get(package_name_dev):
+                graph[package_name_dev]['missing lib'] = missing_count_dev
+
+            # Count missing `bench`.
+            missing_count = 0
+            missing_count_dev = 0
+            # Unfold array of tables `[[bench]]`.
+            blocks = entry['cargo_toml'].get('bench')
+            if blocks is not None:
+                for block in blocks:
+                    if name := block.get('name'):
+                        is_missing = not has_rule(build_bazel, ['rust_binary'], name) and not has_rule(
+                            build_bazel, ['rust_binary'], f'{package_name}_bench')
+                        if is_missing:
+                            # Benches are DEV dependencies always.
+                            missing_count_dev += 1
+            graph[package_name]['missing bench'] = missing_count
+            if graph.get(package_name_dev):
+                graph[package_name_dev]['missing bench'] = missing_count_dev
 
     return graph
 
@@ -276,6 +339,9 @@ def write_csv(graph, path):
             'bazel': 'yes' if info.get('bazelized') else 'no',
             'height': info.get('height'),
             'parents': info.get('parent_count'),
+            'missing bin': info.get('missing bin'),
+            'missing lib': info.get('missing lib'),
+            'missing bench': info.get('missing bench'),
         })
         # Sort by name (asc).
         data = sorted(data, key=lambda x: x['name'], reverse=False)
@@ -322,6 +388,8 @@ def main():
         '-s3p', '--skip_3rd_party', help='skip 3rd party package dependencies', type=str2bool, default=True)
     parser.add_argument(
         '-dev', '--dev_dependencies', help='show dev-dependencies', type=str2bool, default=True)
+    parser.add_argument(
+        '-mis', '--count_missing', help='count missing Cargo attributes in Bazel files', type=str2bool, default=False)
     args = parser.parse_args()
 
     # Print header.
@@ -331,7 +399,8 @@ def main():
 
     # Generate graph of package dependencies.
     graph = build_graph(
-        args.source_dir, skip_3rd_party=args.skip_3rd_party, dev_dependencies=args.dev_dependencies)
+        args.source_dir, skip_3rd_party=args.skip_3rd_party, dev_dependencies=args.dev_dependencies,
+        count_missing=args.count_missing)
     subtree = extract_subtree(graph, args.root_package)
 
     bazel_n, total, ratio = calculate_progress(subtree)

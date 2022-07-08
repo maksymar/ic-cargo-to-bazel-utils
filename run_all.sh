@@ -5,9 +5,9 @@ mkdir ./output
 
 SOURCE_DIR=../ic/rs
 OUTPUT_DIR=./output
-GRAPHVIZ_VIEW=no     # yes/no
-SKIP_3RD_PARTY=yes   # yes/no
-DEV_DEPENDENCIES=no  # yes/no
+GRAPHVIZ_VIEW=no       # yes/no
+SKIP_3RD_PARTY=yes     # yes/no
+DEV_DEPENDENCIES=no    # yes/no
 
 # all
 PACKAGE=all
@@ -27,7 +27,8 @@ PACKAGE=all
   --graphviz_path ${OUTPUT_DIR}/${PACKAGE}-dev.gv \
   --graphviz_view ${GRAPHVIZ_VIEW} \
   --skip_3rd_party ${SKIP_3RD_PARTY} \
-  --dev_dependencies yes
+  --dev_dependencies yes \
+  --count_missing yes
 
 # ic-execution-environment
 PACKAGE=ic-execution-environment
