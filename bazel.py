@@ -2,6 +2,7 @@
 import re
 
 
+RULE = re.compile('^(\w+)\($')
 NAME = re.compile('\s+name = "(.+)"')
 CRATE_NAME = re.compile('\s+crate_name = "(.+)"')
 CRATE = re.compile('\s+crate = "(.+)"')
@@ -13,24 +14,8 @@ def loads(text):
     result = []
     entry = {}
     for line in lines:
-        if line == 'rust_library(':
-            entry['rule'] = 'rust_library'
-            continue
-
-        if line == 'rust_binary(':
-            entry['rule'] = 'rust_binary'
-            continue
-
-        if line == 'rust_proc_macro(':
-            entry['rule'] = 'rust_proc_macro'
-            continue
-
-        if line == 'rust_test(':
-            entry['rule'] = 'rust_test'
-            continue
-
-        if line == 'rust_test_suite(':
-            entry['rule'] = 'rust_test_suite'
+        if match := RULE.match(line):
+            entry['rule'] = match.group(1)
             continue
 
         if match := NAME.match(line):
@@ -46,7 +31,7 @@ def loads(text):
             continue
 
         if line == ')':
-            if entry.get('rule') in ['rust_library', 'rust_binary', 'rust_proc_macro', 'rust_test', 'rust_test_suite']:
+            if entry.get('rule'):
                 result.append(entry)
 
             entry = {}

@@ -65,6 +65,10 @@ rust_test_suite(
 '''
         self.assertEqual(bazel.loads(text), [
             {
+                'rule': 'filegroup',
+                'name': 'sources',
+            },
+            {
                 'rule': 'rust_binary',
                 'name': 'log_analyzer_bench',
             },
