@@ -7,6 +7,7 @@ NAME = re.compile('\s+name = "(.+)"')
 CRATE_NAME = re.compile('\s+crate_name = "(.+)"')
 CRATE = re.compile('\s+crate = "(.+)"')
 SRCS_GLOB = re.compile('\s+srcs = (glob\(\[.+),')
+SRCS_NO_GLOB = re.compile('\s+srcs = (\[.+\]),')
 
 
 def loads(text):
@@ -24,6 +25,10 @@ def loads(text):
             continue
 
         if match := SRCS_GLOB.match(line):
+            entry['srcs'] = match.group(1)
+            continue
+
+        if match := SRCS_NO_GLOB.match(line):
             entry['srcs'] = match.group(1)
             continue
 
