@@ -69,7 +69,7 @@ def is_bazelized_test(package_name, data):
     for test in tests_or_suites:
         test_crate = test.get('crate')
         if test_crate is None:
-            if 'tests/' in test.get('srcs'):
+            if 'tests/' in test.get('srcs', ''):
                 return True
             continue
 

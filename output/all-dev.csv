@@ -29,7 +29,6 @@ ic-crypto-internal-basic-sig-der-utils-[dev],no,0,0,0,0,0
 ic-crypto-internal-basic-sig-ecdsa-secp256k1-[dev],no,0,0,0,0,0
 ic-crypto-internal-basic-sig-ecdsa-wycheproof,no,0,0,0,0,0
 ic-crypto-internal-basic-sig-iccsa-[dev],no,0,0,0,0,0
-ic-crypto-internal-hmac-[dev],no,0,0,0,0,0
 ic-crypto-internal-threshold-sig-bls12381-[dev],no,0,0,0,0,0
 ic-crypto-internal-threshold-sig-ecdsa-[dev],no,0,0,0,0,5
 ic-crypto-node-key-validation-[dev],no,0,0,0,0,0
@@ -37,7 +36,6 @@ ic-crypto-sha-[dev],no,0,0,0,0,0
 ic-crypto-tls-cert-validation-[dev],no,0,0,0,0,0
 ic-crypto-tls-interfaces-[dev],no,0,0,0,0,0
 ic-crypto-utils-threshold-sig-[dev],no,0,0,0,0,0
-ic-cycles-account-manager-[dev],no,0,0,0,0,0
 ic-determinism-test,no,0,0,0,0,0
 ic-drun,no,0,0,1,0,0
 ic-embedders-[dev],no,0,0,0,0,1
@@ -353,12 +351,14 @@ ic-crypto-internal-bls12-381-type-[dev],yes,,0,0,0,1
 ic-crypto-internal-bls12381-serde-miracl-[dev],yes,,0,0,0,1
 ic-crypto-internal-csp-[dev],yes,,0,0,0,0
 ic-crypto-internal-fs-ni-dkg-[dev],yes,,0,0,0,0
+ic-crypto-internal-hmac-[dev],yes,,0,0,0,0
 ic-crypto-internal-multi-sig-bls12381-[dev],yes,,0,0,0,0
 ic-crypto-internal-tls-[dev],yes,,0,0,0,0
 ic-crypto-secrets-containers-[dev],yes,,0,0,0,0
 ic-crypto-tls-[dev],yes,,0,0,0,0
 ic-crypto-tree-hash-[dev],yes,,0,0,0,0
 ic-crypto-utils-basic-sig-[dev],yes,,0,0,0,0
+ic-cycles-account-manager-[dev],yes,,0,0,0,0
 ic-execution-environment-[dev],yes,,0,0,0,3
 ic-http-handler-[dev],yes,,0,0,0,0
 ic-ledger-canister-blocks-synchronizer-[dev],yes,,0,0,0,0
