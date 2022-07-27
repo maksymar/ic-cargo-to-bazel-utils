@@ -6,6 +6,7 @@ RULE = re.compile('^(\w+)\($')
 NAME = re.compile('\s+name = "(.+)"')
 CRATE_NAME = re.compile('\s+crate_name = "(.+)"')
 CRATE = re.compile('\s+crate = "(.+)"')
+SRCS_GLOB = re.compile('\s+srcs = (glob\(\[.+),')
 
 
 def loads(text):
@@ -20,6 +21,10 @@ def loads(text):
 
         if match := NAME.match(line):
             entry['name'] = match.group(1)
+            continue
+
+        if match := SRCS_GLOB.match(line):
+            entry['srcs'] = match.group(1)
             continue
 
         if match := CRATE_NAME.match(line):
@@ -64,7 +69,10 @@ def is_bazelized_test(package_name, data):
     for test in tests_or_suites:
         test_crate = test.get('crate')
         if test_crate is None:
+            if 'tests/' in test.get('srcs', ''):
+                return True
             continue
+
         test_crate = test_crate.replace(':', '')
         for bin in binaries_or_libs:
             if test_crate == bin.get('name') and crate_name in [bin.get('name'), bin.get('crate_name')]:
