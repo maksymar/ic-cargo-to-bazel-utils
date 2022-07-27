@@ -32,7 +32,6 @@ ic-crypto-internal-basic-sig-iccsa-[dev],no,0,0,0,0,0
 ic-crypto-internal-threshold-sig-bls12381-[dev],no,0,0,0,0,0
 ic-crypto-internal-threshold-sig-ecdsa-[dev],no,0,0,0,0,5
 ic-crypto-node-key-validation-[dev],no,0,0,0,0,0
-ic-crypto-sha-[dev],no,0,0,0,0,0
 ic-crypto-tls-cert-validation-[dev],no,0,0,0,0,0
 ic-crypto-tls-interfaces-[dev],no,0,0,0,0,0
 ic-crypto-utils-threshold-sig-[dev],no,0,0,0,0,0
@@ -41,7 +40,6 @@ ic-drun,no,0,0,1,0,0
 ic-embedders-[dev],no,0,0,0,0,1
 ic-icrc1-[dev],no,0,0,0,0,0
 ic-icrc1-archive,no,0,0,0,0,0
-ic-icrc1-ledger-[dev],no,0,0,0,0,0
 ic-identity,no,0,0,0,0,0
 ic-ingress-manager-[dev],no,0,0,0,0,2
 ic-metrics-[dev],no,0,0,0,0,0
@@ -59,7 +57,6 @@ ic-sns-integration-tests,no,0,0,2,0,0
 ic-sns-root-[dev],no,0,0,0,0,0
 ic-sns-swap-[dev],no,0,0,0,0,0
 ic-state-layout-[dev],no,0,0,0,0,0
-ic-state-machine-tests-[dev],no,0,0,0,0,0
 ic-state-manager-[dev],no,0,0,0,0,2
 ic-state-tool,no,0,0,1,0,0
 ic-system-api-[dev],no,0,0,0,0,0
@@ -355,12 +352,14 @@ ic-crypto-internal-hmac-[dev],yes,,0,0,0,0
 ic-crypto-internal-multi-sig-bls12381-[dev],yes,,0,0,0,0
 ic-crypto-internal-tls-[dev],yes,,0,0,0,0
 ic-crypto-secrets-containers-[dev],yes,,0,0,0,0
+ic-crypto-sha-[dev],yes,,0,0,0,0
 ic-crypto-tls-[dev],yes,,0,0,0,0
 ic-crypto-tree-hash-[dev],yes,,0,0,0,0
 ic-crypto-utils-basic-sig-[dev],yes,,0,0,0,0
 ic-cycles-account-manager-[dev],yes,,0,0,0,0
 ic-execution-environment-[dev],yes,,0,0,0,3
 ic-http-handler-[dev],yes,,0,0,0,0
+ic-icrc1-ledger-[dev],yes,,0,0,0,0
 ic-ledger-canister-blocks-synchronizer-[dev],yes,,0,0,0,0
 ic-messaging-[dev],yes,,0,0,0,0
 ic-protobuf-[dev],yes,,0,0,0,0
@@ -368,6 +367,7 @@ ic-registry-keys-[dev],yes,,0,0,0,0
 ic-registry-local-registry-[dev],yes,,0,0,0,0
 ic-registry-local-store-[dev],yes,,0,0,0,0
 ic-registry-transport-[dev],yes,,0,0,0,0
+ic-state-machine-tests-[dev],yes,,0,0,0,0
 ic-sys-[dev],yes,,0,0,0,0
 ic-utils-[dev],yes,,0,0,0,0
 log_analyzer-[dev],yes,,0,0,0,0

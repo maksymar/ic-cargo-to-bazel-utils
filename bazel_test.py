@@ -62,6 +62,16 @@ rust_test_suite(
         "@crate_index//:regex",
     ],
 )
+
+rust_test(
+    name = "sha224_test",
+    srcs = ["tests/sha224.rs"],
+    edition = "2018",
+    deps = [
+        ":sha",
+        "@crate_index//:openssl",
+    ],
+)
 '''
         self.assertEqual(bazel.loads(text), [
             {
@@ -71,6 +81,7 @@ rust_test_suite(
             {
                 'rule': 'rust_binary',
                 'name': 'log_analyzer_bench',
+                'srcs': '["benches/speed.rs"]',
             },
             {
                 'rule': 'rust_library',
@@ -93,6 +104,11 @@ rust_test_suite(
                 'rule': 'rust_test_suite',
                 'name': 'tests',
                 'srcs': 'glob(["tests/**"])',
+            },
+            {
+                'rule': 'rust_test',
+                'name': 'sha224_test',
+                'srcs': '["tests/sha224.rs"]',
             }
         ])
 
@@ -133,7 +149,7 @@ rust_test(
         self.assertTrue(bazel.is_bazelized_bin_or_lib(crate, data))
         self.assertTrue(bazel.is_bazelized_test(crate, data))
 
-    def test_is_bazelized_integration_test(self):
+    def test_is_bazelized_integration_test_glob(self):
         crate = 'ic-cycles-account-manager'
         data = bazel.loads('''
 rust_library(
@@ -146,6 +162,30 @@ rust_test(
     srcs = glob(["tests/**/*.rs"]),
     edition = "2018",
     deps = [":cycles_account_manager"] + DEPENDENCIES + DEV_DEPENDENCIES,
+)
+''')
+        self.assertTrue(bazel.is_bazelized_bin_or_lib(crate, data))
+        self.assertTrue(bazel.is_bazelized_test(crate, data))
+
+    def test_is_bazelized_integration_test(self):
+        crate = 'ic-crypto-sha'
+        data = bazel.loads('''
+rust_library(
+    name = "sha",
+    srcs = glob(["src/**"]),
+    crate_name = "ic_crypto_sha",
+    edition = "2018",
+    deps = ["//rs/crypto/internal/crypto_lib/sha2"],
+)
+
+rust_test(
+    name = "sha224_test",
+    srcs = ["tests/sha224.rs"],
+    edition = "2018",
+    deps = [
+        ":sha",
+        "@crate_index//:openssl",
+    ],
 )
 ''')
         self.assertTrue(bazel.is_bazelized_bin_or_lib(crate, data))
