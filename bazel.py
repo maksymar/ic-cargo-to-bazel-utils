@@ -76,6 +76,8 @@ def is_bazelized_test(package_name, data):
         if test_crate is None:
             if 'tests/' in test.get('srcs', ''):
                 return True
+            if 'test/' in test.get('srcs', ''):
+                return True
             continue
 
         test_crate = test_crate.replace(':', '')
