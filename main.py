@@ -23,7 +23,9 @@ def dev_name(name):
     return f'{name}-[dev]'
 
 
-def build_graph(source_dir, skip_3rd_party, dev_dependencies, count_missing):
+def build_graph(source_dir, skip_3rd_party, dev_dependencies, count_missing, force_migrated):
+    force_migrated = set(force_migrated)
+
     # Collect Cargo.toml paths.
     data = [
         {
@@ -64,9 +66,12 @@ def build_graph(source_dir, skip_3rd_party, dev_dependencies, count_missing):
         if skip_3rd_party:
             children = [x for x in children if x in packages]
         children = sorted(children, reverse=False)  # Stabilaze data.
+        bazelized = bazel.is_bazelized_bin_or_lib(package_name, build_bazel)
+        is_force_migrated = package_name in force_migrated
         graph[package_name] = {
-            'bazelized': bazel.is_bazelized_bin_or_lib(package_name, build_bazel),
+            'bazelized': bazelized or is_force_migrated,
             'children': children,
+            'force_migrated': is_force_migrated,
         }
 
         # Calculate children DEV packages.
@@ -78,9 +83,12 @@ def build_graph(source_dir, skip_3rd_party, dev_dependencies, count_missing):
                 children_dev = [x for x in children_dev if x in packages]
             # Stabilaze data.
             children_dev = sorted(children_dev, reverse=False)
+            bazelized = bazel.is_bazelized_test(package_name, build_bazel)
+            is_force_migrated = package_name_dev in force_migrated
             graph[package_name_dev] = {
-                'bazelized': bazel.is_bazelized_test(package_name, build_bazel),
+                'bazelized': bazelized or is_force_migrated,
                 'children': children_dev,
+                'force_migrated': is_force_migrated,
             }
             graph[package_name_dev]['children'] += [package_name]
 
@@ -342,6 +350,7 @@ def write_csv(graph, path):
             'missing bin': info.get('missing bin'),
             'missing lib': info.get('missing lib'),
             'missing bench': info.get('missing bench'),
+            'forced': 'yes' if info.get('force_migrated') else 'no',
         })
         # Sort by name (asc).
         data = sorted(data, key=lambda x: x['name'], reverse=False)
@@ -390,6 +399,8 @@ def main():
         '-dev', '--dev_dependencies', help='show dev-dependencies', type=str2bool, default=True)
     parser.add_argument(
         '-mis', '--count_missing', help='count missing Cargo attributes in Bazel files', type=str2bool, default=False)
+    parser.add_argument(
+        '-f', '--force_migrated_file', help='input file with a list of packages, considered migrated', default='./force_migrated.txt')
     args = parser.parse_args()
 
     # Print header.
@@ -397,10 +408,13 @@ def main():
     print('')
     print(f'Root package: {args.root_package}{dev}')
 
+    # Read list of packages that are considered migrated.
+    force_migrated = read(args.force_migrated_file).strip().split('\n')
+
     # Generate graph of package dependencies.
     graph = build_graph(
         args.source_dir, skip_3rd_party=args.skip_3rd_party, dev_dependencies=args.dev_dependencies,
-        count_missing=args.count_missing)
+        count_missing=args.count_missing, force_migrated=force_migrated)
     subtree = extract_subtree(graph, args.root_package)
 
     bazel_n, total, ratio = calculate_progress(subtree)
