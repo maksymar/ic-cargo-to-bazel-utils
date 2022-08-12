@@ -72,6 +72,12 @@ rust_test(
         "@crate_index//:openssl",
     ],
 )
+
+rust_canister(
+    name = "ecdsa-canister",
+    srcs = ["src/main.rs"],
+    deps = DEPENDENCIES,
+)
 '''
         self.assertEqual(bazel.loads(text), [
             {
@@ -109,6 +115,11 @@ rust_test(
                 'rule': 'rust_test',
                 'name': 'sha224_test',
                 'srcs': '["tests/sha224.rs"]',
+            },
+            {
+                'rule': 'rust_canister',
+                'name': 'ecdsa-canister',
+                'srcs': '["src/main.rs"]',
             }
         ])
 
@@ -128,6 +139,16 @@ rust_library(
 rust_library(
     name = "der_utils",
     crate_name = "ic_crypto_internal_threshold_sig_bls12381_der",
+)
+''')
+        self.assertTrue(bazel.is_bazelized_bin_or_lib(crate, data))
+        self.assertFalse(bazel.is_bazelized_test(crate, data))
+
+    def test_is_bazelized_rust_canister(self):
+        crate = 'ecdsa-canister'
+        data = bazel.loads('''
+rust_canister(
+    name = "ecdsa-canister",
 )
 ''')
         self.assertTrue(bazel.is_bazelized_bin_or_lib(crate, data))

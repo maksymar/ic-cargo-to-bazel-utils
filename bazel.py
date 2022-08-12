@@ -51,38 +51,42 @@ def loads(text):
 
 
 def is_bazelized_bin_or_lib(package_name, data):
-    crate_name = package_name.replace('-', '_')
+    def _check(name, data):
+        binaries_or_libs = [
+            x for x in data if x.get('rule') in ['rust_library', 'rust_binary', 'rust_proc_macro', 'rust_canister']
+        ]
+        for x in binaries_or_libs:
+            if name in [x.get('name'), x.get('crate_name')]:
+                return True
+        return False
 
-    binaries_or_libs = [
-        x for x in data if x.get('rule') in ['rust_library', 'rust_binary', 'rust_proc_macro']
-    ]
-    for x in binaries_or_libs:
-        if crate_name in [x.get('name'), x.get('crate_name')]:
-            return True
-    return False
+    crate_name = package_name.replace('-', '_')
+    return _check(package_name, data) or _check(crate_name, data)
 
 
 def is_bazelized_test(package_name, data):
+    def _check(name, data):
+        binaries_or_libs = [
+            x for x in data if x.get('rule') in ['rust_library', 'rust_binary', 'rust_proc_macro']
+        ]
+        tests_or_suites = [
+            x for x in data if x.get('rule') in ['rust_test', 'rust_test_suite']
+        ]
+        for test in tests_or_suites:
+            test_crate = test.get('crate')
+            if test_crate is None:
+                if 'tests/' in test.get('srcs', ''):
+                    return True
+                if 'test/' in test.get('srcs', ''):
+                    return True
+                continue
+
+            test_crate = test_crate.replace(':', '')
+            for bin in binaries_or_libs:
+                if test_crate == bin.get('name') and name in [bin.get('name'), bin.get('crate_name')]:
+                    return True
+
+        return False
+
     crate_name = package_name.replace('-', '_')
-
-    binaries_or_libs = [
-        x for x in data if x.get('rule') in ['rust_library', 'rust_binary', 'rust_proc_macro']
-    ]
-    tests_or_suites = [
-        x for x in data if x.get('rule') in ['rust_test', 'rust_test_suite']
-    ]
-    for test in tests_or_suites:
-        test_crate = test.get('crate')
-        if test_crate is None:
-            if 'tests/' in test.get('srcs', ''):
-                return True
-            if 'test/' in test.get('srcs', ''):
-                return True
-            continue
-
-        test_crate = test_crate.replace(':', '')
-        for bin in binaries_or_libs:
-            if test_crate == bin.get('name') and crate_name in [bin.get('name'), bin.get('crate_name')]:
-                return True
-
-    return False
+    return _check(package_name, data) or _check(crate_name, data)
