@@ -354,6 +354,8 @@ def write_csv(graph, path):
         })
         # Sort by name (asc).
         data = sorted(data, key=lambda x: x['name'], reverse=False)
+        # Sort by forced (asc).
+        data = sorted(data, key=lambda x: x['forced'], reverse=False)
         # Sort by parents (desc).
         data = sorted(data, key=lambda x: x['parents']
                       if x['parents'] is not None else 0, reverse=True)

@@ -1,8 +1,11 @@
 boundary-node-control-plane
+canister_sandbox-[dev]
 ecdsa-canister
 governance_upgrader
 hardware_wallet_tests
 ic-admin
+ic-admin-[dev]
+ic-canister-sandbox-launcher-[dev]
 ic-crypto-extended-bip32
 ic-icrc1-archive
 ic-prep
