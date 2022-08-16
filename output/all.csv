@@ -83,7 +83,6 @@ ic-interfaces-p2p,yes,,6,,,,no
 ic-metrics-exporter,yes,,6,,,,no
 ic-state-layout,yes,,6,,,,no
 ic-system-api,yes,,6,,,,no
-ic-prep,yes,,6,,,,yes
 ic-artifact-pool,yes,,5,,,,no
 ic-embedders,yes,,5,,,,no
 ic-interfaces-transport,yes,,5,,,,no
@@ -244,6 +243,7 @@ pmap,yes,,0,,,,no
 registry-canister-protobuf-generator,yes,,0,,,,no
 statesync-test,yes,,0,,,,no
 vsock_agent,yes,,0,,,,no
+ic-prep,yes,,6,,,,yes
 boundary-node-control-plane,yes,,0,,,,yes
 ecdsa-canister,yes,,0,,,,yes
 governance_upgrader,yes,,0,,,,yes

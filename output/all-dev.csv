@@ -121,7 +121,6 @@ ic-nervous-system-root,yes,,8,0,0,0,no
 ic-sns-governance,yes,,8,0,0,0,no
 ic-system-api,yes,,8,0,0,0,no
 ic-test-utilities-metrics,yes,,8,0,0,0,no
-ic-prep,yes,,8,0,0,0,yes
 ic-consensus,yes,,7,0,0,0,no
 ic-crypto-internal-basic-sig-ed25519,yes,,7,0,0,0,no
 ic-crypto-internal-threshold-sig-ecdsa,yes,,7,0,0,0,no
@@ -271,10 +270,6 @@ proxy_canister,yes,,1,0,0,0,no
 registry-canister-protobuf-generator,yes,,1,0,0,0,no
 stable_reader,yes,,1,0,0,0,no
 statesync-test,yes,,1,1,0,0,no
-ic-admin,yes,,1,0,0,0,yes
-ic-crypto-extended-bip32,yes,,1,0,0,0,yes
-ic-registry-common-proto-generator,yes,,1,0,0,0,yes
-rust-canister-tests,yes,,1,0,0,0,yes
 bazelifier,yes,,0,0,0,0,no
 boundary-node-prober,yes,,0,0,0,0,no
 denylist-updater,yes,,0,0,0,0,no
@@ -358,6 +353,11 @@ orchestrator-[dev],yes,,0,0,0,0,no
 pmap,yes,,0,0,0,0,no
 tree-deserializer-[dev],yes,,0,0,0,0,no
 vsock_agent,yes,,0,0,0,0,no
+ic-prep,yes,,8,0,0,0,yes
+ic-admin,yes,,1,0,0,0,yes
+ic-crypto-extended-bip32,yes,,1,0,0,0,yes
+ic-registry-common-proto-generator,yes,,1,0,0,0,yes
+rust-canister-tests,yes,,1,0,0,0,yes
 boundary-node-control-plane,yes,,0,0,0,0,yes
 canister_sandbox-[dev],yes,,0,0,0,0,yes
 ecdsa-canister,yes,,0,0,0,0,yes
